@@ -15,12 +15,14 @@ class PhotoService() : AsyncTask<Void?, Void?, List<Photo>>() {
     override fun doInBackground(vararg params: Void?): List<Photo> {
         val resposta = StringBuilder()
         try {
-            val url = URL("https://jsonplaceholder.typicode.com/photos")
-
+            val url = URL("https://jsonplaceholder.typicode.com/photos?_page=1&_limit=10")
             val httpClient = url.openConnection() as HttpURLConnection
             httpClient.requestMethod = "GET"
-            httpClient.setRequestProperty("Content-type", "application/json");
-            httpClient.setRequestProperty("Accept", "application/json");
+            httpClient.setRequestProperty("Content-type", "application/json")
+            httpClient.setRequestProperty("Accept", "application/json")
+            httpClient.setConnectTimeout(5000)
+            httpClient.connect()
+
             if (httpClient.responseCode == HttpURLConnection.HTTP_OK) {
                 try {
                     val stream = BufferedInputStream(httpClient.inputStream)
@@ -31,8 +33,6 @@ class PhotoService() : AsyncTask<Void?, Void?, List<Photo>>() {
                 } finally {
                     httpClient.disconnect()
                 }
-            } else {
-                println("ERROR ${httpClient.responseCode}")
             }
         } catch (e: MalformedURLException) {
             e.printStackTrace()
